@@ -14,7 +14,13 @@ Sito pubblicato con GitHub Pages: https://lucavanzetti.github.io/coi-vimercate-s
 
 Il repo è **pubblico** (necessario per GitHub Pages gratuito su piano personale) ma le pagine hanno `<meta name="robots" content="noindex, nofollow">` e c'è un `robots.txt` che blocca l'indicizzazione: non compaiono nei motori di ricerca, ma restano raggiungibili da chiunque abbia il link diretto.
 
-`todolist.html` mostra nomi ed email dei volontari/direttivo presi dal foglio Google collegato. Il foglio è ora pubblicato con restrizione "solo account nel dominio" (verificato: richiesta anonima → `401`), quindi i dati si caricano solo per chi è collegato nel browser con un account `@coivimercate.org`; a chiunque altro la pagina mostra un errore di accesso. Resta comunque buona norma condividere il link solo con chi deve usarlo.
+`todolist.html` legge un foglio Google pubblicato **in chiaro, senza restrizioni** (il meccanismo "solo account nel dominio" di Google non è utilizzabile da una pagina statica: il browser non porta i cookie di login di Google in una richiesta fatta da un altro sito, quindi quella restrizione impediva il caricamento a tutti, non solo a chi non doveva vedere i dati). Per questo motivo il foglio sorgente è stato ripulito dai dati sensibili prima della pubblicazione:
+
+- la colonna "Responsabile" riporta solo il **nome** (non l'email) di chi segue l'attività;
+- le attività con stato "Completato" **non vengono pubblicate** nel CSV collegato alla pagina;
+- la colonna "Storico" del foglio può ancora contenere note libere con nome ed email di chi ha scritto l'aggiornamento (es. `luca.vanzetti@coivimercate.org: ...`) — la pagina non la mostra, ma **chi scarica direttamente il CSV la vede**. Se possibile, evita di far comparire l'email nel testo libero dello storico (basta il nome), oppure tienila in una colonna separata esclusa dalla pubblicazione.
+
+Il file CSV pubblicato è raggiungibile da chiunque abbia il link (nessun login richiesto): trattalo come dato pubblico e non inserire nel foglio nulla che non vorresti fosse visibile a chiunque (dati di minori, indirizzi, numeri di telefono, dati sanitari o altre categorie particolari GDPR). Condividi comunque il link della pagina solo con chi deve usarla.
 
 ## Aggiornare i link al modulo/foglio
 

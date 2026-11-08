@@ -40,10 +40,10 @@
 
     /* ── STATS ── */
     .stats {
-      display: grid; grid-template-columns: repeat(5, 1fr);
+      display: grid; grid-template-columns: repeat(4, 1fr);
       gap: 12px; margin-bottom: 20px;
     }
-    @media (max-width: 900px) { .stats { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) { .stats { grid-template-columns: repeat(2, 1fr); } }
     .stat-card {
       background: white; border-radius: 10px; padding: 16px 18px;
@@ -55,14 +55,12 @@
     .stat-card.all  { border-color: #6c757d; }
     .stat-card.open { border-color: #f39c12; }
     .stat-card.wip  { border-color: #3498db; }
-    .stat-card.done { border-color: #27ae60; }
     .stat-card.alta { border-color: #e74c3c; }
     .stat-number { font-size: 1.9rem; font-weight: 800; line-height: 1; }
     .stat-label  { font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
     .stat-card.all  .stat-number { color: #6c757d; }
     .stat-card.open .stat-number { color: #f39c12; }
     .stat-card.wip  .stat-number { color: #3498db; }
-    .stat-card.done .stat-number { color: #27ae60; }
     .stat-card.alta .stat-number { color: #e74c3c; }
 
     /* ── FILTERS ── */
@@ -269,10 +267,6 @@
       <div class="stat-number" id="s-wip">—</div>
       <div class="stat-label">In corso</div>
     </div>
-    <div class="stat-card done" onclick="quickFilterStatus(this,'Completato')">
-      <div class="stat-number" id="s-done">—</div>
-      <div class="stat-label">Completati</div>
-    </div>
     <div class="stat-card all" onclick="quickFilterAll(this)">
       <div class="stat-number" id="s-all">—</div>
       <div class="stat-label">Totali</div>
@@ -287,11 +281,9 @@
     <div class="filter-group">
       <label>Stato</label>
       <select id="fStatus" onchange="renderTable()">
-        <option value="__active__">Attivi (escludi completati)</option>
         <option value="__all__">Tutti gli stati</option>
         <option value="Non iniziato">Solo: Non iniziato</option>
         <option value="In corso">Solo: In corso</option>
-        <option value="Completato">Solo: Completato</option>
       </select>
     </div>
     <div class="filter-group">
@@ -304,12 +296,7 @@
     </div>
     <div class="filter-group">
       <label>Priorità</label>
-      <select id="fPriority" onchange="renderTable()">
-        <option value="">Tutte</option>
-        <option value="Alta">Alta</option>
-        <option value="Media">Media</option>
-        <option value="Bassa">Bassa</option>
-      </select>
+      <select id="fPriority" onchange="renderTable()"></select>
     </div>
     <button class="btn-reset" onclick="resetFilters()">✕ Reset filtri</button>
   </div>
@@ -565,11 +552,9 @@ async function init() {
       err.message === '__SERVER__'
         ? `<div style="max-width:480px;margin:0 auto;text-align:left">
              <strong style="color:#c0392b">Impossibile caricare i dati dal foglio.</strong><br><br>
-             Questo foglio è riservato agli account Google del COI. Assicurati di essere
-             collegato/a con il tuo account <code>@coivimercate.org</code> in questo browser,
-             oppure apri prima il
-             <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQTk0Ud2XtdnXpBB0sSdycO_OuSuR0sONhovZUWKLEqu_pgyWYRdaFO9ePKqzjkg_9OOs-zl1-hSOuz/pub?gid=1991876066&single=true&output=csv" target="_blank" rel="noopener">link del foglio</a>
-             per effettuare l'accesso.
+             Controlla la connessione e riprova. Se il problema persiste, verifica che il foglio
+             sia ancora pubblicato come CSV su
+             <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQTk0Ud2XtdnXpBB0sSdycO_OuSuR0sONhovZUWKLEqu_pgyWYRdaFO9ePKqzjkg_9OOs-zl1-hSOuz/pub?gid=1991876066&single=true&output=csv" target="_blank" rel="noopener">questo link</a>.
            </div>`
         : `<span style="color:#c0392b">Errore: ${err.message}</span>`;
   }
@@ -587,22 +572,25 @@ function populateDropdowns() {
   newArea.innerHTML = '<option value="">— seleziona —</option>' + all.map(a => `<option${a===current?' selected':''}>${a}</option>`).join('');
 
   const resps = [...new Set(TASKS.map(t => t.resp).filter(Boolean))].sort();
+  const hasUnassigned = TASKS.some(t => !t.resp);
   document.getElementById('fResp').innerHTML =
     '<option value="">Tutti</option>' +
-    '<option value="__vuoto__">— Non assegnato —</option>' +
+    (hasUnassigned ? '<option value="__vuoto__">— Non assegnato —</option>' : '') +
     resps.map(r => `<option value="${r}">${r}</option>`).join('');
+
+  const priorities = ['Alta','Media','Bassa'].filter(p => TASKS.some(t => t.priorita === p));
+  document.getElementById('fPriority').innerHTML =
+    '<option value="">Tutte</option>' + priorities.map(p => `<option value="${p}">${p}</option>`).join('');
 }
 
 function updateStats() {
   const total   = TASKS.length;
   const nonIniz = TASKS.filter(t => t.stato === 'Non iniziato').length;
   const inCorso = TASKS.filter(t => t.stato === 'In corso').length;
-  const comp    = TASKS.filter(t => t.stato === 'Completato').length;
   const alta    = TASKS.filter(t => t.priorita === 'Alta' && t.stato !== 'Completato').length;
   document.getElementById('s-all').textContent  = total;
   document.getElementById('s-open').textContent = nonIniz;
   document.getElementById('s-wip').textContent  = inCorso;
-  document.getElementById('s-done').textContent = comp;
   document.getElementById('s-alta').textContent = alta;
   document.getElementById('openCount').textContent = (nonIniz + inCorso) + ' attivi';
 }
@@ -614,8 +602,7 @@ function getFiltered() {
   const resp     = document.getElementById('fResp').value;
   const priority = document.getElementById('fPriority').value;
   return TASKS.filter(t => {
-    if (status === '__active__' && t.stato === 'Completato')                   return false;
-    if (status !== '__all__' && status !== '__active__' && t.stato !== status) return false;
+    if (status !== '__all__' && t.stato !== status) return false;
     if (area     && t.area     !== area)     return false;
     if (priority && t.priorita !== priority) return false;
     if (resp === '__vuoto__' && t.resp !== '')           return false;
@@ -733,11 +720,11 @@ function quickFilterStatus(el, value) {
   clearStatCards(); el.classList.add('active'); renderTable();
 }
 function quickFilterPriority(el, priority) {
-  document.getElementById('fStatus').value='__active__'; document.getElementById('fPriority').value=priority;
+  document.getElementById('fStatus').value='__all__'; document.getElementById('fPriority').value=priority;
   clearStatCards(); el.classList.add('active'); renderTable();
 }
 function resetFilters() {
-  document.getElementById('fSearch').value=''; document.getElementById('fStatus').value='__active__';
+  document.getElementById('fSearch').value=''; document.getElementById('fStatus').value='__all__';
   document.getElementById('fArea').value=''; document.getElementById('fResp').value='';
   document.getElementById('fPriority').value=''; clearStatCards(); renderTable();
 }
