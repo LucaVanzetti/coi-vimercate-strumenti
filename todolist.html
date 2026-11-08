@@ -18,7 +18,7 @@
     /* ── HEADER ── */
     header {
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      color: white; padding: 20px 28px; display: flex; align-items: center;
+      color: white; padding: 14px 24px; display: flex; align-items: center;
       gap: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
     header h1 { font-size: 1.5rem; font-weight: 700; }
@@ -36,17 +36,18 @@
     .btn-new-task:hover { background: #5c6bc0; }
 
     /* ── MAIN — full width con padding ── */
-    main { padding: 20px 20px; }
+    main { padding: 16px 20px; }
 
     /* ── STATS ── */
     .stats {
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 12px; margin-bottom: 20px;
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px; margin-bottom: 14px;
     }
-    @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 600px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     .stat-card {
-      background: white; border-radius: 10px; padding: 16px 18px;
+      background: white; border-radius: 10px; padding: 12px 16px;
+      display: flex; align-items: center; gap: 12px; min-width: 0;
+      font: inherit; text-align: left; border: 0;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 4px solid #ccc;
       cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
     }
@@ -56,17 +57,20 @@
     .stat-card.open { border-color: #f39c12; }
     .stat-card.wip  { border-color: #3498db; }
     .stat-card.alta { border-color: #e74c3c; }
-    .stat-number { font-size: 1.9rem; font-weight: 800; line-height: 1; }
+    .stat-card.scadute { border-color: #b42318; }
+    .stat-number { font-size: 1.6rem; font-weight: 800; line-height: 1; }
     .stat-label  { font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
     .stat-card.all  .stat-number { color: #6c757d; }
     .stat-card.open .stat-number { color: #f39c12; }
     .stat-card.wip  .stat-number { color: #3498db; }
     .stat-card.alta .stat-number { color: #e74c3c; }
+    .stat-card.scadute .stat-number { color: #b42318; }
+    .stat-card:focus-visible { outline: 3px solid #3949ab; outline-offset: 2px; }
 
     /* ── FILTERS ── */
     .filters {
-      background: white; border-radius: 10px; padding: 14px 18px;
-      margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      background: white; border-radius: 10px; padding: 10px 14px;
+      margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
     }
     .filter-group { display: flex; align-items: center; gap: 6px; }
@@ -82,10 +86,14 @@
     }
     .btn-reset:hover { background: #dde0e8; }
 
+    .page-footer { padding: 18px 4px 4px; text-align: center; font-size: 0.82rem; color: #666; }
+    .page-footer a { color: #3949ab; font-weight: 600; text-decoration: none; }
+    .page-footer a:hover { text-decoration: underline; }
+
     /* ── TABLE ── */
     .table-wrapper { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
     .table-meta { padding: 10px 18px; font-size: 0.8rem; color: #888; border-bottom: 1px solid #f0f0f0; }
-    .table-scroll { overflow-x: auto; max-height: 68vh; overflow-y: auto; }
+    .table-scroll { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.855rem; }
     thead th {
       background: #f8f9fa; padding: 11px 13px; text-align: left;
@@ -255,22 +263,26 @@
 <!-- ══ MAIN ══ -->
 <main>
   <div class="stats">
-    <div class="stat-card alta" onclick="quickFilterPriority(this,'Alta')">
+    <button type="button" class="stat-card alta" onclick="quickFilterPriority(this,'Alta')">
       <div class="stat-number" id="s-alta">—</div>
       <div class="stat-label">Priorità Alta</div>
-    </div>
-    <div class="stat-card open" onclick="quickFilterStatus(this,'Non iniziato')">
+    </button>
+    <button type="button" class="stat-card scadute" onclick="quickFilterOverdue(this)" title="Attività non completate con scadenza passata">
+      <div class="stat-number" id="s-scadute">—</div>
+      <div class="stat-label">Scadute</div>
+    </button>
+    <button type="button" class="stat-card open" onclick="quickFilterStatus(this,'Non iniziato')">
       <div class="stat-number" id="s-open">—</div>
       <div class="stat-label">Non iniziati</div>
-    </div>
-    <div class="stat-card wip" onclick="quickFilterStatus(this,'In corso')">
+    </button>
+    <button type="button" class="stat-card wip" onclick="quickFilterStatus(this,'In corso')">
       <div class="stat-number" id="s-wip">—</div>
       <div class="stat-label">In corso</div>
-    </div>
-    <div class="stat-card all" onclick="quickFilterAll(this)">
+    </button>
+    <button type="button" class="stat-card all" onclick="quickFilterAll(this)">
       <div class="stat-number" id="s-all">—</div>
       <div class="stat-label">Totali</div>
-    </div>
+    </button>
   </div>
 
   <div class="filters">
@@ -327,6 +339,9 @@
       <div class="status-msg" id="noResults" style="display:none">Nessun risultato trovato.</div>
     </div>
   </div>
+  <footer class="page-footer">
+    <a href="https://docs.google.com/spreadsheets/d/1YSYE4bD0cgMTA5U1BJmeT8wh7AS18PogHNcijFU5Wgk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Apri il foglio Google delle attività ↗</a>
+  </footer>
 </main>
 
 <!-- ══ MODALE NUOVA ATTIVITÀ ══ -->
@@ -444,6 +459,7 @@ let TASKS = [];
 let sortField = 'priorita';
 let sortAsc   = false;
 const TODAY = new Date();
+TODAY.setHours(0, 0, 0, 0);
 
 // --- CSV PARSER ---
 function parseCSV(text) {
@@ -583,6 +599,13 @@ function populateDropdowns() {
     '<option value="">Tutte</option>' + priorities.map(p => `<option value="${p}">${p}</option>`).join('');
 }
 
+function isOverdue(task) {
+  const diff = dateDiff(task.scadenza);
+  return task.stato !== 'Completato' && diff !== null && diff < 0;
+}
+
+let overdueOnly = false;
+
 function updateStats() {
   const total   = TASKS.length;
   const nonIniz = TASKS.filter(t => t.stato === 'Non iniziato').length;
@@ -592,6 +615,7 @@ function updateStats() {
   document.getElementById('s-open').textContent = nonIniz;
   document.getElementById('s-wip').textContent  = inCorso;
   document.getElementById('s-alta').textContent = alta;
+  document.getElementById('s-scadute').textContent = TASKS.filter(isOverdue).length;
   document.getElementById('openCount').textContent = (nonIniz + inCorso) + ' attivi';
 }
 
@@ -602,6 +626,7 @@ function getFiltered() {
   const resp     = document.getElementById('fResp').value;
   const priority = document.getElementById('fPriority').value;
   return TASKS.filter(t => {
+    if (overdueOnly && !isOverdue(t)) return false;
     if (status !== '__all__' && t.stato !== status) return false;
     if (area     && t.area     !== area)     return false;
     if (priority && t.priorita !== priority) return false;
@@ -711,19 +736,28 @@ function sortBy(field) {
 
 function clearStatCards() { document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active')); }
 function quickFilterAll(el) {
+  overdueOnly = false;
   document.getElementById('fStatus').value='__all__'; document.getElementById('fPriority').value='';
   document.getElementById('fArea').value=''; document.getElementById('fResp').value='';
   document.getElementById('fSearch').value=''; clearStatCards(); el.classList.add('active'); renderTable();
 }
 function quickFilterStatus(el, value) {
+  overdueOnly = false;
   document.getElementById('fStatus').value=value; document.getElementById('fPriority').value='';
   clearStatCards(); el.classList.add('active'); renderTable();
 }
 function quickFilterPriority(el, priority) {
+  overdueOnly = false;
   document.getElementById('fStatus').value='__all__'; document.getElementById('fPriority').value=priority;
   clearStatCards(); el.classList.add('active'); renderTable();
 }
+function quickFilterOverdue(el) {
+  overdueOnly = true;
+  document.getElementById('fStatus').value='__all__'; document.getElementById('fPriority').value='';
+  clearStatCards(); el.classList.add('active'); renderTable();
+}
 function resetFilters() {
+  overdueOnly = false;
   document.getElementById('fSearch').value=''; document.getElementById('fStatus').value='__all__';
   document.getElementById('fArea').value=''; document.getElementById('fResp').value='';
   document.getElementById('fPriority').value=''; clearStatCards(); renderTable();
