@@ -14,7 +14,7 @@ Sito pubblicato con GitHub Pages: https://lucavanzetti.github.io/coi-vimercate-s
 
 Il repo è **pubblico** (necessario per GitHub Pages gratuito su piano personale) ma le pagine hanno `<meta name="robots" content="noindex, nofollow">` e c'è un `robots.txt` che blocca l'indicizzazione: non compaiono nei motori di ricerca, ma restano raggiungibili da chiunque abbia il link diretto.
 
-`todolist.html` mostra attualmente nomi ed email dei volontari/direttivo prese dal foglio Google collegato: è in corso un lavoro di anonimizzazione dei dati alla fonte (sul foglio) prima di considerare la pagina sicura da condividere liberamente. Fino ad allora, condividere il link di `todolist.html` solo con chi deve usarlo.
+`todolist.html` mostra nomi ed email dei volontari/direttivo presi dal foglio Google collegato. Il foglio è ora pubblicato con restrizione "solo account nel dominio" (verificato: richiesta anonima → `401`), quindi i dati si caricano solo per chi è collegato nel browser con un account `@coivimercate.org`; a chiunque altro la pagina mostra un errore di accesso. Resta comunque buona norma condividere il link solo con chi deve usarlo.
 
 ## Aggiornare i link al modulo/foglio
 

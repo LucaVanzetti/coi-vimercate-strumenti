@@ -565,8 +565,11 @@ async function init() {
       err.message === '__SERVER__'
         ? `<div style="max-width:480px;margin:0 auto;text-align:left">
              <strong style="color:#c0392b">Impossibile caricare i dati dal foglio.</strong><br><br>
-             Il browser blocca le richieste esterne quando il file è aperto come <code>file://</code>.<br><br>
-             <strong>Soluzione: pubblica il file su GitHub Pages o Google Sites.</strong>
+             Questo foglio è riservato agli account Google del COI. Assicurati di essere
+             collegato/a con il tuo account <code>@coivimercate.org</code> in questo browser,
+             oppure apri prima il
+             <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQTk0Ud2XtdnXpBB0sSdycO_OuSuR0sONhovZUWKLEqu_pgyWYRdaFO9ePKqzjkg_9OOs-zl1-hSOuz/pub?gid=1991876066&single=true&output=csv" target="_blank" rel="noopener">link del foglio</a>
+             per effettuare l'accesso.
            </div>`
         : `<span style="color:#c0392b">Errore: ${err.message}</span>`;
   }
