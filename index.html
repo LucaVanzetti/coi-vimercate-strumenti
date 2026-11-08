@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strumenti COI Vimercate</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0f2f5; color: #1a1a2e; min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: white; padding: 36px 28px; text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    header h1 { font-size: 1.7rem; font-weight: 700; margin-bottom: 8px; }
+    header p { font-size: 0.95rem; opacity: 0.7; max-width: 560px; margin: 0 auto; }
+    main {
+      flex: 1; max-width: 900px; width: 100%; margin: 0 auto;
+      padding: 32px 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px; align-content: start;
+    }
+    a.tool-card {
+      background: white; border-radius: 12px; padding: 24px; text-decoration: none;
+      color: inherit; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid #3949ab;
+      display: flex; flex-direction: column; gap: 10px; transition: transform 0.15s, box-shadow 0.15s;
+    }
+    a.tool-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+    a.tool-card.bacheca { border-left-color: #e94560; }
+    .tool-icon { font-size: 1.8rem; }
+    .tool-title { font-size: 1.1rem; font-weight: 700; }
+    .tool-desc { font-size: 0.88rem; color: #555; line-height: 1.5; }
+    .tool-cta { margin-top: auto; font-size: 0.82rem; font-weight: 700; color: #3949ab; }
+    footer { text-align: center; color: #999; font-size: 0.75rem; padding: 20px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Strumenti COI Vimercate</h1>
+  <p>Pagine ad uso interno per i volontari dell'accoglienza e il direttivo — dati sempre aggiornati dai fogli Google condivisi.</p>
+</header>
+
+<main>
+  <a class="tool-card bacheca" href="bacheca.html">
+    <div class="tool-icon">📰</div>
+    <div class="tool-title">Bacheca Contenuti</div>
+    <div class="tool-desc">Corsi, offerte di lavoro, bonus e avvisi pronti da segnalare agli studenti: elenco e timeline di cosa è attivo ora.</div>
+    <div class="tool-cta">Apri la bacheca →</div>
+  </a>
+
+  <a class="tool-card" href="todolist.html">
+    <div class="tool-icon">✅</div>
+    <div class="tool-title">Todo Direttivo</div>
+    <div class="tool-desc">Lo stato delle attività e scadenze del direttivo, in sola lettura, aggiornato dal foglio Google condiviso.</div>
+    <div class="tool-cta">Apri la todo list →</div>
+  </a>
+</main>
+
+<footer>COI Vimercate · Pagine generate dai fogli Google del sistema interno, nessun dato modificabile da qui.</footer>
+
+</body>
+</html>

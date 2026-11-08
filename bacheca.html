@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COI Vimercate — Bacheca Contenuti</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0f2f5;
+      color: #1a1a2e;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: white; padding: 20px 28px; display: flex; align-items: center;
+      gap: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-wrap: wrap;
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; }
+    header p  { font-size: 0.88rem; opacity: 0.65; margin-top: 2px; }
+    .header-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
+    .btn-header-link {
+      background: rgba(255,255,255,0.12); color: #e7e8f3; border: none; padding: 8px 14px;
+      border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none;
+      white-space: nowrap; transition: background 0.2s;
+    }
+    .btn-header-link:hover { background: rgba(255,255,255,0.22); }
+    .btn-header-cta {
+      background: #e94560; color: white; border: none; padding: 8px 14px;
+      border-radius: 8px; font-size: 0.8rem; font-weight: 700; text-decoration: none;
+      white-space: nowrap; transition: background 0.2s;
+    }
+    .btn-header-cta:hover { background: #ff5a78; }
+    .badge-header {
+      background: #e94560; color: white; padding: 4px 12px;
+      border-radius: 20px; font-size: 0.75rem; font-weight: 700; white-space: nowrap;
+    }
+    .btn-refresh {
+      background: #3949ab; color: white; border: none; padding: 8px 16px;
+      border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; transition: background 0.2s; white-space: nowrap;
+    }
+    .btn-refresh:hover { background: #5c6bc0; }
+    .btn-refresh:disabled { opacity: 0.6; cursor: default; }
+
+    /* ── MAIN ── */
+    main { padding: 20px 20px; max-width: 1400px; margin: 0 auto; }
+
+    /* ── STAT CARDS == VISTE ── */
+    .stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 12px; margin-bottom: 10px;
+    }
+    @media (max-width: 760px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+    .stat-card {
+      background: white; border-radius: 10px; padding: 16px 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 4px solid #ccc;
+      cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .stat-card:hover  { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .stat-card.active { outline: 3px solid currentColor; outline-offset: 2px; }
+    .stat-card.attivi  { border-color: #27ae60; }
+    .stat-card.attesa  { border-color: #f39c12; }
+    .stat-card.scaduti { border-color: #e74c3c; }
+    .stat-card.archivio{ border-color: #6c757d; }
+    .stat-number { font-size: 1.9rem; font-weight: 800; line-height: 1; }
+    .stat-label  { font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card.attivi  .stat-number { color: #27ae60; }
+    .stat-card.attesa  .stat-number { color: #f39c12; }
+    .stat-card.scaduti .stat-number { color: #e74c3c; }
+    .stat-card.archivio.visible .stat-number { color: #6c757d; }
+
+    .archive-toggle {
+      background: none; border: none; color: #888; font-size: 0.78rem;
+      cursor: pointer; text-decoration: underline; padding: 4px 2px; margin-bottom: 16px;
+    }
+
+    /* ── VIEW TABS (Elenco / Timeline) ── */
+    .view-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+    .tab-btn {
+      padding: 9px 18px; border-radius: 999px; font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; border: 1.5px solid #d7d9e3; background: white; color: #1a1a2e;
+      transition: background 0.2s, color 0.2s;
+    }
+    .tab-btn.active { background: #1a1a2e; color: white; border-color: #1a1a2e; }
+
+    /* ── TIMELINE / GANTT ── */
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.8rem; font-weight: 600; color: #333; margin-bottom: 14px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    .gantt-wrap { background: white; border-radius: 10px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow-x: auto; }
+    .gantt-axis, .gantt-row { display: flex; align-items: center; gap: 16px; }
+    .gantt-label { width: 200px; flex-shrink: 0; font-size: 0.82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gantt-months { flex: 1; display: flex; justify-content: space-between; font-size: 0.72rem; color: #6c757d; font-weight: 700; padding: 0 4px; min-width: 360px; }
+    .gantt-body { position: relative; display: flex; flex-direction: column; gap: 10px; margin-top: 8px; min-width: 580px; }
+    .gantt-track { flex: 1; position: relative; height: 36px; border-radius: 6px; min-width: 360px; }
+    .gantt-bar { position: absolute; top: 4px; height: 28px; border-radius: 6px; color: white; font-size: 0.72rem;
+      font-weight: 700; display: flex; align-items: center; padding: 0 8px; white-space: nowrap; overflow: hidden; }
+    .today-line { position: absolute; top: -6px; bottom: 0; width: 2px; background: #e94560; z-index: 2; }
+    .today-line span { position: absolute; top: -16px; left: -14px; font-size: 0.65rem; font-weight: 800; color: #e94560; white-space: nowrap; }
+    .upcoming { margin-top: 18px; }
+    .upcoming h3 { font-size: 0.85rem; margin-bottom: 8px; color: #333; }
+    .upcoming-row {
+      background: white; border-radius: 8px; padding: 8px 12px; display: flex;
+      justify-content: space-between; align-items: center; gap: 10px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06); margin-bottom: 6px; font-size: 0.85rem; font-weight: 600;
+    }
+
+    /* ── COME CONTRIBUIRE ── */
+    .contribute { margin-top: 30px; }
+    .contribute h2 { font-size: 1.1rem; margin-bottom: 14px; }
+    .contribute-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 16px; }
+    .step {
+      background: white; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .step-num {
+      width: 30px; height: 30px; border-radius: 50%; background: #3949ab; color: white;
+      display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem;
+    }
+    .step h3 { font-size: 0.95rem; }
+    .step p { font-size: 0.85rem; color: #444; line-height: 1.5; }
+    .contribute-manager {
+      background: #eef0f7; border-radius: 10px; padding: 18px; display: flex; flex-wrap: wrap;
+      gap: 14px; align-items: center; justify-content: space-between;
+    }
+    .contribute-manager h3 { font-size: 0.9rem; margin-bottom: 4px; }
+    .contribute-manager p { font-size: 0.8rem; color: #555; }
+
+    /* ── FILTERS ── */
+    .filters {
+      background: white; border-radius: 10px; padding: 14px 18px;
+      margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    }
+    .filter-group { display: flex; align-items: center; gap: 6px; }
+    .filters label { font-size: 0.8rem; font-weight: 600; color: #555; white-space: nowrap; }
+    .filters select, .filters input[type="text"] {
+      border: 1.5px solid #e0e0e0; border-radius: 7px; padding: 6px 10px;
+      font-size: 0.83rem; outline: none; background: #fafafa; transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    .filters select:focus, .filters input[type="text"]:focus { border-color: #3498db; background: white; }
+    .filters input[type="text"] { flex: 1; min-width: 160px; }
+    .btn-reset {
+      margin-left: auto; background: #f0f2f5; border: none; padding: 7px 14px;
+      border-radius: 7px; font-size: 0.8rem; cursor: pointer; color: #555; transition: background 0.2s;
+    }
+    .btn-reset:hover { background: #dde0e8; }
+
+    /* ── STATUS MESSAGES ── */
+    .status-msg { text-align: center; padding: 60px 20px; color: #aaa; font-size: 1rem; }
+    .spinner {
+      display: inline-block; width: 20px; height: 20px;
+      border: 3px solid #e0e0e0; border-top-color: #3498db;
+      border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── CARD GRID ── */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+    .card {
+      background: white; border-radius: 10px; padding: 16px 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07); border-left: 4px solid #e0e0e0;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .card.urgent  { border-left-color: #e74c3c; }
+    .card.soon    { border-left-color: #f39c12; }
+    .card.ok      { border-left-color: #27ae60; }
+    .card.flat    { border-left-color: #adb5bd; }
+    .card-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+    .badge {
+      display: inline-block; padding: 3px 9px; border-radius: 20px;
+      font-size: 0.7rem; font-weight: 700; white-space: nowrap;
+    }
+    .badge-area { background: #e8eaf6; color: #3949ab; }
+    .badge-stato-ok     { background: #d1e7dd; color: #0a3622; }
+    .badge-stato-attesa { background: #fff3cd; color: #856404; }
+    .badge-stato-flat   { background: #e9ecef; color: #495057; }
+    .card-title { font-weight: 700; font-size: 0.98rem; color: #1a1a2e; line-height: 1.3; }
+    .date-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 0.8rem; font-weight: 600;
+      padding: 5px 10px; border-radius: 7px; width: fit-content; }
+    .date-chip.urgent { background: #f8d7da; color: #842029; }
+    .date-chip.soon   { background: #fff3cd; color: #664d03; }
+    .date-chip.ok     { background: #d1e7dd; color: #0a3622; }
+    .date-chip.flat   { background: #e9ecef; color: #495057; }
+    .card-field { font-size: 0.85rem; line-height: 1.45; color: #333; }
+    .card-field b {
+      display: block; font-weight: 700; color: #888; font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px;
+    }
+    .card-actions { margin-top: auto; padding-top: 6px; }
+    .btn-link {
+      display: inline-block; padding: 7px 14px; border-radius: 7px;
+      background: #3949ab; color: white; font-size: 0.8rem; font-weight: 600;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .btn-link:hover { background: #5c6bc0; }
+    .no-link { font-size: 0.8rem; color: #aaa; }
+
+    footer { text-align: center; color: #999; font-size: 0.75rem; margin: 30px 0 10px; }
+
+    @media (max-width: 640px) {
+      header { padding: 14px 16px; }
+      header h1 { font-size: 1.1rem; }
+      main { padding: 12px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div>
+    <h1>COI Vimercate — Bacheca Contenuti</h1>
+    <p id="headerSub">Caricamento dati…</p>
+  </div>
+  <div class="header-actions">
+    <a class="btn-header-link" id="sheetLink" href="#" target="_blank" rel="noopener">📊 Apri il foglio Google</a>
+    <a class="btn-header-cta" id="formLink" href="#" target="_blank" rel="noopener">➕ Segnala un contenuto</a>
+    <span class="badge-header" id="activeCount">…</span>
+    <button class="btn-refresh" id="refreshBtn" type="button">⟳ Aggiorna</button>
+  </div>
+</header>
+
+<!-- ══ MAIN ══ -->
+<main>
+  <div class="view-tabs" id="viewTabs">
+    <button class="tab-btn active" data-mode="list" type="button">📋 Elenco</button>
+    <button class="tab-btn" data-mode="timeline" type="button">📅 Timeline</button>
+  </div>
+
+  <div class="stats" id="statRow">
+    <div class="stat-card attivi active" data-view="attivi">
+      <div class="stat-number" id="s-attivi">—</div>
+      <div class="stat-label">Attivi ora</div>
+    </div>
+    <div class="stat-card attesa" data-view="attesa">
+      <div class="stat-number" id="s-attesa">—</div>
+      <div class="stat-label">Da approvare</div>
+    </div>
+    <div class="stat-card scaduti" data-view="scaduti">
+      <div class="stat-number" id="s-scaduti">—</div>
+      <div class="stat-label">Scaduti / passati</div>
+    </div>
+    <div class="stat-card archivio" data-view="archivio" id="archivioCard" style="display:none">
+      <div class="stat-number" id="s-archivio">—</div>
+      <div class="stat-label">Archivio</div>
+    </div>
+  </div>
+  <button class="archive-toggle" id="archiveToggle" type="button">Mostra archivio</button>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label>Cerca</label>
+      <input type="text" id="fSearch" placeholder="titolo o descrizione…">
+    </div>
+    <div class="filter-group">
+      <label>Argomento</label>
+      <select id="fArgomento">
+        <option value="">Tutti</option>
+        <option value="Corsi e formazione">Corsi e formazione</option>
+        <option value="Lavoro">Lavoro</option>
+        <option value="Bonus e contributi">Bonus e contributi</option>
+        <option value="Avvisi COI">Avvisi COI</option>
+      </select>
+    </div>
+    <button class="btn-reset" id="resetBtn" type="button">✕ Reset filtri</button>
+  </div>
+
+  <div id="contentArea">
+    <div class="status-msg" id="loadingMsg">
+      <div class="spinner"></div><br>Caricamento dati dal foglio…
+    </div>
+    <div class="grid" id="grid" style="display:none"></div>
+    <div class="status-msg" id="noResults" style="display:none">Nessun risultato trovato.</div>
+    <div id="timelineArea" style="display:none">
+      <div class="legend" id="ganttLegend"></div>
+      <div class="gantt-wrap" id="ganttWrap"></div>
+      <div class="upcoming" id="upcomingList"></div>
+    </div>
+  </div>
+
+  <section class="contribute" id="contribute">
+    <h2>Come contribuire alla bacheca</h2>
+    <div class="contribute-steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Compila il modulo</h3>
+        <p>Hai visto un corso, un'offerta di lavoro, un bonus o un avviso utile? Segnalalo con il modulo online: bastano pochi minuti.</p>
+        <a class="btn-link" id="formLink2" href="#" target="_blank" rel="noopener">Apri il modulo →</a>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Il team COI verifica</h3>
+        <p>Un volontario controlla la segnalazione. Nel frattempo compare nella bacheca con lo stato "In attesa".</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Pubblicazione automatica</h3>
+        <p>Se approvata, la segnalazione passa in automatico tra i contenuti attivi, con tutti i dettagli compilati.</p>
+      </div>
+    </div>
+    <div class="contribute-manager">
+      <div>
+        <h3>Sei un volontario che gestisce i contenuti?</h3>
+        <p>Il foglio Google resta lo strumento di lavoro per approvare, modificare e archiviare le segnalazioni. Serve il permesso di modifica.</p>
+      </div>
+      <a class="btn-link" id="sheetLink2" href="#" target="_blank" rel="noopener">📊 Apri il foglio Google (accesso riservato)</a>
+    </div>
+  </section>
+
+  <footer>Dati presi dal foglio Contenuti del sistema newsletter COI. Non modificare da qui: per cambiare uno stato usa il Google Sheet. · <a href="#contribute">Come contribuire</a></footer>
+</main>
+
+<script>
+// ============================================================
+// CONFIGURAZIONE
+// ============================================================
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZPqQVmR9gvE0YvbNnlCFpX9JwCImuFJGE9_FAMEb760LzMj8Fa85564GjhGdD2njvMMPjeG4NKIH2/pub?gid=1089845350&single=true&output=csv';
+
+const COLUMNS = ["ID","Timestamp","Argomento","Tipo","Titolo","Cos'e","Per chi e","Scadenza","Data inizio","Data fine","Dove","Costo / importo","Cosa serve","Come fare domanda","Link ufficiale","Supporto COI sabato","Email segnalante","Data invio pianificata","Stato","Data invio","ID digest","N. destinatari","Note interne","Verificato il","Promemoria inviato il","ID risposta form"];
+const HIDDEN_COLS = ["Email segnalante", "Note interne", "ID risposta form", "ID digest"];
+
+// TODO: metti qui il link di modifica del foglio Google (visibile solo a chi gestisce i contenuti)
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1gYfSydooGRMVvgtw7nFX3Epj86vwdg5E3ZSQczd_nvM/edit?usp=sharing';
+// TODO: metti qui il link al modulo di segnalazione (es. Google Form) usato per proporre nuovi contenuti
+const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScORn8ZCIo9V9eSFLssIjE6TyxNULrYQLAzT2_sTHHhscRmzw/viewform';
+
+const AREA_COLORS = {
+  'Corsi e formazione': '#3949ab',
+  'Lavoro': '#00897b',
+  'Bonus e contributi': '#27ae60',
+  'Avvisi COI': '#e94560',
+};
+// ============================================================
+
+// Stessa catena di proxy usata in todolist onlone.html: prova il fetch diretto,
+// poi una serie di proxy CORS pubblici, cosi' la pagina funziona anche aperta
+// come file:// o incorporata (iframe sandboxato) in Google Sites.
+const PROXY_FNS = [
+  u => u,
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  u => `https://thingproxy.freeboard.io/fetch/${u}`,
+];
+
+async function tryFetch(url, ms = 8000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    const res = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.text();
+  } finally { clearTimeout(timer); }
+}
+
+async function fetchCSV() {
+  for (const fn of PROXY_FNS) {
+    try {
+      const text = await tryFetch(fn(CSV_URL));
+      if (text && text.includes(',')) return text;
+    } catch (_) {}
+  }
+  throw new Error('__SERVER__');
+}
+
+let ROWS = [];
+let state = { view: 'attivi', archiveShown: false, mode: 'list' };
+
+// ── CSV PARSER (gestisce virgolette e virgole nei campi) ──
+function parseCSV(text) {
+  const rows = [];
+  let i = 0; const n = text.length;
+  while (i < n) {
+    const row = [];
+    while (i < n) {
+      if (text[i] === '"') {
+        i++; let field = '';
+        while (i < n) {
+          if (text[i] === '"') {
+            if (text[i+1] === '"') { field += '"'; i += 2; } else { i++; break; }
+          } else { field += text[i++]; }
+        }
+        row.push(field.trim());
+      } else {
+        let field = '';
+        while (i < n && text[i] !== ',' && text[i] !== '\n' && text[i] !== '\r') field += text[i++];
+        row.push(field.trim());
+      }
+      if (i < n && text[i] === ',') i++; else break;
+    }
+    if (i < n && text[i] === '\r') i++;
+    if (i < n && text[i] === '\n') i++;
+    if (row.some(c => c !== '')) rows.push(row);
+  }
+  return rows;
+}
+
+function rowsToObjects(rows) {
+  if (rows.length === 0) return [];
+  const out = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    const obj = {};
+    for (let j = 0; j < COLUMNS.length; j++) obj[COLUMNS[j]] = (r[j] || '').trim();
+    if (Object.values(obj).some(v => v !== '')) out.push(obj);
+  }
+  return out;
+}
+
+function parseItDate(value) {
+  if (!value || !value.trim()) return null;
+  value = value.trim();
+  let m = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+  if (m) {
+    let y = parseInt(m[3], 10); if (y < 100) y += 2000;
+    const d = new Date(y, parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+    return isNaN(d.getTime()) ? null : d;
+  }
+  m = value.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) {
+    const d = new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10));
+    return isNaN(d.getTime()) ? null : d;
+  }
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function startOfToday() { const t = new Date(); t.setHours(0,0,0,0); return t; }
+
+function fmtDateIt(d) {
+  const gg = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  return `${gg}/${mm}/${d.getFullYear()}`;
+}
+
+function deadlineInfo(scadenzaStr) {
+  const d = parseItDate(scadenzaStr);
+  if (!d) return null;
+  const diffDays = Math.round((d - startOfToday()) / 86400000);
+  let text, cls;
+  if (diffDays < 0)        { text = 'Scaduto il ' + fmtDateIt(d); cls = 'flat'; }
+  else if (diffDays === 0) { text = 'Scade oggi'; cls = 'urgent'; }
+  else if (diffDays === 1) { text = 'Scade domani'; cls = 'urgent'; }
+  else if (diffDays <= 3)  { text = `Scade tra ${diffDays} giorni`; cls = 'urgent'; }
+  else if (diffDays <= 10) { text = `Scade tra ${diffDays} giorni`; cls = 'soon'; }
+  else                     { text = `Scade tra ${diffDays} giorni (${fmtDateIt(d)})`; cls = 'ok'; }
+  return { date: d, diffDays, text, cls };
+}
+
+function statusBadge(stato) {
+  const s = (stato || '').toUpperCase();
+  if (s === 'APPROVATO') return { cls: 'ok', label: 'Approvato' };
+  if (s === 'INVIATO')   return { cls: 'ok', label: 'Inviato' };
+  if (s === 'IN_ATTESA') return { cls: 'attesa', label: 'In attesa' };
+  if (s === 'RIFIUTATO') return { cls: 'flat', label: 'Rifiutato' };
+  if (s === 'ARCHIVIATO')return { cls: 'flat', label: 'Archiviato' };
+  return { cls: 'flat', label: s || 'Non indicato' };
+}
+
+function classify(item) {
+  const stato = (item['Stato'] || '').toUpperCase();
+  const dl = deadlineInfo(item['Scadenza']);
+  const isExpired = dl ? dl.diffDays < 0 : false;
+  if (stato === 'RIFIUTATO' || stato === 'ARCHIVIATO') return 'archivio';
+  if (isExpired) return 'scaduti';
+  if (stato === 'IN_ATTESA') return 'attesa';
+  if (stato === 'APPROVATO' || stato === 'INVIATO') return 'attivi';
+  return 'archivio';
+}
+
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function fieldHtml(label, value) {
+  if (!value) return '';
+  return `<div class="card-field"><b>${esc(label)}</b>${esc(value)}</div>`;
+}
+
+function getBuckets() {
+  const buckets = { attivi: [], attesa: [], scaduti: [], archivio: [] };
+  ROWS.forEach(item => buckets[classify(item)].push(item));
+  buckets.attivi.sort((a, b) => {
+    const da = deadlineInfo(a['Scadenza']), db = deadlineInfo(b['Scadenza']);
+    if (!da && !db) return 0;
+    if (!da) return 1;
+    if (!db) return -1;
+    return da.date - db.date;
+  });
+  return buckets;
+}
+
+function updateStats(buckets) {
+  document.getElementById('s-attivi').textContent   = buckets.attivi.length;
+  document.getElementById('s-attesa').textContent   = buckets.attesa.length;
+  document.getElementById('s-scaduti').textContent  = buckets.scaduti.length;
+  document.getElementById('s-archivio').textContent = buckets.archivio.length;
+  document.getElementById('activeCount').textContent = buckets.attivi.length + ' attivi';
+}
+
+function cardClassFor(item, sb) {
+  const dl = deadlineInfo(item['Scadenza']);
+  if (dl && dl.cls !== 'flat') return dl.cls;
+  return sb.cls === 'ok' ? 'ok' : 'flat';
+}
+
+function renderCard(item) {
+  const sb = statusBadge(item['Stato']);
+  const dl = deadlineInfo(item['Scadenza']);
+  const link = item['Link ufficiale'];
+  return `<div class="card ${cardClassFor(item, sb)}">
+    <div class="card-badges">
+      <span class="badge badge-area">${esc(item['Argomento'] || 'Non indicato')}${item['Tipo'] ? ' · ' + esc(item['Tipo']) : ''}</span>
+      <span class="badge badge-stato-${sb.cls === 'ok' ? 'ok' : (sb.cls === 'attesa' ? 'attesa' : 'flat')}">${esc(sb.label)}</span>
+    </div>
+    <div class="card-title">${esc(item['Titolo'] || '(senza titolo)')}</div>
+    ${dl ? `<span class="date-chip ${dl.cls}">${esc(dl.text)}</span>` : ''}
+    ${fieldHtml("Cos'è", item["Cos'e"])}
+    ${fieldHtml('Per chi è', item['Per chi e'])}
+    ${fieldHtml('Dove', item['Dove'])}
+    ${fieldHtml('Costo', item['Costo / importo'])}
+    ${fieldHtml('Come fare domanda', item['Come fare domanda'])}
+    <div class="card-actions">
+      ${link ? `<a class="btn-link" href="${esc(link)}" target="_blank" rel="noopener">Apri il sito ufficiale</a>`
+             : `<span class="no-link">Nessun link ufficiale indicato</span>`}
+    </div>
+  </div>`;
+}
+
+function getFiltered(list) {
+  const search = document.getElementById('fSearch').value.trim().toLowerCase();
+  const argomento = document.getElementById('fArgomento').value;
+  return list.filter(item => {
+    if (argomento && (item['Argomento'] || '').trim() !== argomento) return false;
+    if (search) {
+      const hay = ((item['Titolo'] || '') + ' ' + (item["Cos'e"] || '')).toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    return true;
+  });
+}
+
+const EMPTY_MSG = {
+  attivi: 'Nessun contenuto attivo al momento.',
+  attesa: 'Niente in attesa di approvazione.',
+  scaduti: 'Nessun contenuto scaduto o passato.',
+  archivio: "L'archivio è vuoto.",
+};
+
+function addMonths(d, n) { return new Date(d.getFullYear(), d.getMonth() + n, 1); }
+function monthKey(d) { return d.getFullYear() * 12 + d.getMonth(); }
+
+function renderTimeline(items) {
+  const legend = document.getElementById('ganttLegend');
+  const wrap = document.getElementById('ganttWrap');
+  const upcoming = document.getElementById('upcomingList');
+
+  legend.innerHTML = Object.entries(AREA_COLORS).map(([k, c]) =>
+    `<span><span class="legend-dot" style="background:${c}"></span>${esc(k)}</span>`).join('');
+
+  if (!items.length) {
+    wrap.innerHTML = '<div class="status-msg">Nessun contenuto attivo da mostrare nella timeline.</div>';
+    upcoming.innerHTML = '';
+    return;
+  }
+
+  const ranges = items.map(item => {
+    const start = parseItDate(item['Data inizio']) || parseItDate(item['Timestamp']) || startOfToday();
+    const end = parseItDate(item['Data fine']) || parseItDate(item['Scadenza']);
+    return { item, start, end };
+  });
+
+  const today = startOfToday();
+  let minD = new Date(Math.min(today.getTime(), ...ranges.map(r => r.start.getTime())));
+  let maxD = new Date(Math.max(today.getTime(), ...ranges.map(r => (r.end || r.start).getTime())));
+  minD = new Date(minD.getFullYear(), minD.getMonth(), 1);
+  maxD = new Date(maxD.getFullYear(), maxD.getMonth() + 1, 0);
+  if (monthKey(maxD) - monthKey(minD) < 1) maxD = addMonths(minD, 2);
+
+  const totalMs = maxD - minD;
+  const months = [];
+  let cursor = new Date(minD);
+  while (cursor <= maxD) { months.push(new Date(cursor)); cursor = addMonths(cursor, 1); }
+  const nSeg = Math.max(1, months.length - 1);
+  const step = 100 / nSeg;
+  const trackBg = `repeating-linear-gradient(to right, transparent 0, transparent calc(${step}% - 1px), #e9ebf1 calc(${step}% - 1px), #e9ebf1 ${step}%)`;
+
+  const todayFrac = Math.min(1, Math.max(0, (today - minD) / totalMs));
+  const monthsHtml = months.map(m => `<span>${esc(m.toLocaleDateString('it-IT', { month: 'short', year: 'numeric' }))}</span>`).join('');
+
+  const rowsHtml = ranges.map(({ item, start, end }) => {
+    const s = Math.max(start.getTime(), minD.getTime());
+    const e = end ? Math.min(end.getTime(), maxD.getTime()) : maxD.getTime();
+    const leftPct = (s - minD) / totalMs * 100;
+    const widthPct = Math.max(1.5, (e - s) / totalMs * 100);
+    const color = AREA_COLORS[item['Argomento']] || '#6c757d';
+    const label = end ? `${fmtDateIt(start)} – ${fmtDateIt(end)}` : (item['Scadenza'] ? 'senza data fine' : 'senza scadenza');
+    return `<div class="gantt-row">
+      <div class="gantt-label" title="${esc(item['Titolo'] || '')}">${esc(item['Titolo'] || '(senza titolo)')}</div>
+      <div class="gantt-track" style="background:${trackBg}">
+        <div class="gantt-bar" style="left:${leftPct}%;width:${widthPct}%;background:${color}" title="${esc(label)}">${esc(label)}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div class="gantt-axis"><div class="gantt-label"></div><div class="gantt-months">${monthsHtml}</div></div>
+    <div class="gantt-body">
+      <div class="today-line" style="left:calc(216px + (100% - 216px) * ${todayFrac.toFixed(4)})"><span>OGGI</span></div>
+      ${rowsHtml}
+    </div>`;
+
+  const nextDeadlines = items
+    .map(item => ({ item, dl: deadlineInfo(item['Scadenza']) }))
+    .filter(x => x.dl && x.dl.diffDays >= 0)
+    .sort((a, b) => a.dl.date - b.dl.date)
+    .slice(0, 5);
+
+  upcoming.innerHTML = nextDeadlines.length
+    ? '<h3>Prossime scadenze</h3>' + nextDeadlines.map(({ item, dl }) =>
+        `<div class="upcoming-row"><span>${esc(item['Titolo'] || '')}</span><span class="date-chip ${dl.cls}">${esc(dl.text)}</span></div>`).join('')
+    : '';
+}
+
+function render() {
+  if (!ROWS.length) return;
+  const buckets = getBuckets();
+  updateStats(buckets);
+
+  const grid = document.getElementById('grid');
+  const noRes = document.getElementById('noResults');
+  const timelineArea = document.getElementById('timelineArea');
+
+  if (state.mode === 'timeline') {
+    grid.style.display = 'none';
+    noRes.style.display = 'none';
+    timelineArea.style.display = '';
+    renderTimeline(getFiltered(buckets.attivi));
+    return;
+  }
+  timelineArea.style.display = 'none';
+
+  const list = getFiltered(buckets[state.view] || []);
+
+  if (list.length === 0) {
+    grid.style.display = 'none';
+    noRes.style.display = '';
+    noRes.textContent = EMPTY_MSG[state.view] || 'Nessun risultato trovato.';
+    return;
+  }
+  noRes.style.display = 'none';
+  grid.style.display = 'grid';
+  grid.innerHTML = list.map(renderCard).join('');
+}
+
+function setView(view) {
+  state.view = view;
+  document.querySelectorAll('.stat-card').forEach(c => c.classList.toggle('active', c.dataset.view === view));
+  render();
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  document.getElementById('statRow').style.display = mode === 'list' ? '' : 'none';
+  document.getElementById('archiveToggle').style.display = mode === 'list' ? '' : 'none';
+  render();
+}
+
+document.getElementById('statRow').addEventListener('click', e => {
+  const card = e.target.closest('.stat-card');
+  if (card && card.style.display !== 'none') setView(card.dataset.view);
+});
+
+document.getElementById('viewTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (btn) setMode(btn.dataset.mode);
+});
+
+document.getElementById('archiveToggle').addEventListener('click', function () {
+  state.archiveShown = !state.archiveShown;
+  const archCard = document.getElementById('archivioCard');
+  archCard.style.display = state.archiveShown ? '' : 'none';
+  this.textContent = state.archiveShown ? 'Nascondi archivio' : 'Mostra archivio';
+  if (!state.archiveShown && state.view === 'archivio') setView('attivi');
+});
+
+document.getElementById('fSearch').addEventListener('input', () => render());
+document.getElementById('fArgomento').addEventListener('change', () => render());
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.getElementById('fSearch').value = '';
+  document.getElementById('fArgomento').value = '';
+  render();
+});
+
+function wireLinks() {
+  ['sheetLink', 'sheetLink2'].forEach(id => { document.getElementById(id).href = SHEET_URL; });
+  ['formLink', 'formLink2'].forEach(id => { document.getElementById(id).href = FORM_URL; });
+}
+
+async function init() {
+  wireLinks();
+  document.getElementById('refreshBtn').disabled = true;
+  document.getElementById('refreshBtn').textContent = '⟳ Aggiorno…';
+  try {
+    const text = await fetchCSV();
+    const rows = parseCSV(text);
+    let objs = rowsToObjects(rows);
+    HIDDEN_COLS.forEach(col => objs.forEach(o => delete o[col]));
+    ROWS = objs;
+
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('grid').style.display = 'grid';
+    const now = new Date();
+    document.getElementById('headerSub').textContent =
+      'Aggiornato: ' + now.toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' }) +
+      ' alle ' + now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    render();
+  } catch (err) {
+    document.getElementById('loadingMsg').innerHTML =
+      err.message === '__SERVER__'
+        ? `<div style="max-width:480px;margin:0 auto;text-align:left">
+             <strong style="color:#c0392b">Impossibile caricare i dati dal foglio.</strong><br><br>
+             Il browser blocca le richieste esterne quando il file è aperto come <code>file://</code>
+             e tutti i proxy di riserva hanno fallito.<br><br>
+             <strong>Soluzione: pubblica il file su GitHub Pages o Google Sites e riprova.</strong>
+           </div>`
+        : `<span style="color:#c0392b">Errore: ${esc(err.message)}</span>`;
+    document.getElementById('headerSub').textContent = 'Aggiornamento non riuscito';
+  } finally {
+    document.getElementById('refreshBtn').disabled = false;
+    document.getElementById('refreshBtn').textContent = '⟳ Aggiorna';
+  }
+}
+
+document.getElementById('refreshBtn').addEventListener('click', init);
+
+init();
+</script>
+</body>
+</html>
