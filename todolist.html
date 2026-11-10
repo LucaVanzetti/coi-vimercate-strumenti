@@ -165,9 +165,24 @@
     .card-meta    { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.73rem; color: #777; }
 
     @media (max-width: 640px) {
-      header { padding: 14px 16px; }
+      header {
+        padding: 14px 16px;
+        flex-wrap: wrap;
+        align-items: stretch;
+        gap: 12px;
+      }
       header h1 { font-size: 1.1rem; }
-      main { padding: 12px 8px; }
+      .header-actions {
+        width: 100%; margin-left: 0;
+        justify-content: space-between;
+      }
+      main { padding: 14px 12px; }
+      .stat-card { padding: 12px; gap: 8px; }
+      .filters { padding: 14px; gap: 10px; }
+      .filter-group { width: 100%; }
+      .filter-group input[type="text"], .filter-group select { width: 100%; min-width: 0; }
+      .btn-reset { width: 100%; margin-left: 0; padding: 9px 14px; }
+      #cardView { padding: 10px 0; }
       .table-scroll { max-height: none; overflow-x: visible; overflow-y: visible; }
       #mainTable { display: none !important; }
       #cardView  { display: block; }
